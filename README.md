@@ -2,7 +2,6 @@
 
 Das ist ein einfaches Plugin für den [ED MarketConnector](https://github.com/Marginal/EDMarketConnector/wiki), basierend auf dem Original [EDMCJumpSpeed](https://github.com/Exynom/EDMC-HourlyIncome) vom inorton!
 
-![In-game Screenshot](edmc_plugins_js.png)
 
 ![In-game Screenshot](edmc_plugins_light.png) ![In-game Screenshot](edmc_plugins_dark.png)
 
