@@ -1,6 +1,14 @@
 """
 The "Jump Speed" Plugin
+fork from original by Blacky_BPG
 """
+
+import l10n
+import functools
+import myNotebook as nb
+
+_ = functools.partial(l10n.Translations.translate, context=__file__)
+
 try:
     import Tkinter as tk
 except ImportError:
@@ -16,7 +24,13 @@ try:
 except ImportError:
     config = dict()
 
+APP_VERSION = "20.04.12_b1848"
+
 CFG_DISTANCE = "JumpSpeed_distance"
+CFG_JUMPS = "JumpSpeed_jumps"
+CFG_TIME = "JumpSpeed_time"
+CFG_DESIGN = "JumpSpeed_design"
+COLOR_NORM = ("#000000", "#80FFFF")
 
 
 class Jump(object):
@@ -37,28 +51,51 @@ class JumpSpeed(object):
     rate_widget = None
     dist_widget = None
     saved_distance = 0
+    saved_jumps = 0
+    saved_time = 0
+    start_time = 0
+    appdesign = 0
     jumps = []
 
     def reset(self):
         """
         Reset button pressed
-        :return:
+        !! disabled for better visuals in app
         """
         self.jumps = []
         self.saved_distance = 0
+        self.saved_jumps = 0
+        self.saved_time = 0
+        self.start_time = 0
         self.update_window()
         self.save()
 
     def load(self):
         """
         Load saved distance from config
-        :return:
         """
+        if config.get(CFG_DESIGN):
+            self.appdesign = int(config.get(CFG_DESIGN))
+        else:
+           self.appdesign = 0
+
         saved = config.get(CFG_DISTANCE)
         if not saved:
             self.saved_distance = 0.0
         else:
             self.saved_distance = float(saved)
+
+        savedJ = config.get(CFG_JUMPS)
+        if not savedJ:
+            self.saved_jumps = 0.0
+        else:
+            self.saved_jumps = float(savedJ)
+
+        savedT = config.get(CFG_TIME)
+        if not savedT:
+            self.saved_time = 0.0
+        else:
+            self.saved_time = float(savedT)
 
     def save(self):
         """
@@ -66,13 +103,27 @@ class JumpSpeed(object):
         :return:
         """
         config.set(CFG_DISTANCE, str(self.saved_distance + self.trip_distance()))
+        config.set(CFG_JUMPS, str(self.saved_jumps + self.alljumps()))
+        config.set(CFG_TIME, str(self.saved_time + self.sincetime()))
+
+    def start_data(self, totaldistance, totaljumps, totaltime):
+        """
+        """
+        if self.saved_distance == 0:
+            self.saved_distance = totaldistance
+
+        self.saved_jumps = totaljumps
+        self.saved_time = totaltime / 3600
+        self.update_window()
+        self.save()
 
     def jump(self, distance):
         """
         Record a jump
-        :param distance:
-        :return:
         """
+        if self.start_time == 0:
+            self.start_time = time.time()
+
         data = Jump()
         data.distance = distance
         data.time = time.time()
@@ -80,42 +131,85 @@ class JumpSpeed(object):
         self.update_window()
         self.save()
 
+    def alljumps(self):
+        """
+        Overall jumps
+        :return overall jumps for trip
+        """
+        if len(self.jumps) > 0:
+            return len(self.jumps)
+        else:
+            return 0
+
+    def starttime(self):
+        """
+        start timer for daily statistics
+        """
+        self.start_time = time.time()
+        self.update_window()
+
+    def sincetime(self):
+        """
+        """
+        if self.start_time > 0:
+            return (time.time() - self.start_time) / 3600
+        else:
+            return 1
+
     def trip_distance(self):
         """
         Measure how far we've jumped
-        :return:
+        :return sum of all distances for trip:
         """
         return sum([x.distance for x in self.jumps])
 
     def rate(self):
         """
         Get the jump/hr rate
-        :return:
+        :return jump overall jump rate per hour:
         """
-        if len(self.jumps) > 1:
-            started = self.jumps[0].time
-            now = time.time()
-            return len(self.jumps) * 60.0 * 60.0 / (now - started)
+        if self.alljumps() > 0:
+            return (self.saved_jumps + self.alljumps()) / (self.saved_time + self.sincetime())
+        elif self.saved_jumps > 0:
+            return self.saved_jumps / self.saved_time
         else:
-            return 0.0
+            return 0
+
+    def ratenow(self):
+        """
+        Get the jump/hr rate
+        :return jump rate for trip per hour:
+        """
+        if self.alljumps() > 0:
+            return self.alljumps() / self.sincetime()
+        else:
+            return 0
 
     def speed(self):
         """
         Get the jump speed in ly/hr
-        :return:
+        :return overall jump speed rate per hour:
         """
-        dist = self.trip_distance()
-        if dist > 0 and len(self.jumps) > 1:
-            started = self.jumps[0].time
-            now = time.time()
-            return dist * 60.0 * 60.0 / (now - started)
+        if self.trip_distance() > 0 and self.alljumps() > 0:
+            return (self.saved_distance + self.trip_distance()) / (self.saved_time + self.sincetime())
+        elif self.saved_distance > 0:
+            return self.saved_distance / self.saved_time
         else:
-            return 0.0
+            return 0
+
+    def speednow(self):
+        """
+        Get the jump speed in ly/hr
+        :return jump speed rate for trip per hour:
+        """
+        if self.trip_distance() > 0 and self.alljumps() > 0:
+            return self.trip_distance() / self.sincetime()
+        else:
+            return 0
 
     def update_window(self):
         """
         Update the EDMC window
-        :return:
         """
         self.update_jumpspeed_dist()
         self.update_jumpspeed_rate()
@@ -124,29 +218,54 @@ class JumpSpeed(object):
     def update_jumpspeed_rate(self):
         """
         Set the jump rate rate in the EDMC window
-        :param msg:
-        :return:
         """
-        msg = "{} Jumps/hr".format(Locale.stringFromNumber(self.rate(), 2))
+        msg = " {}".format(Locale.stringFromNumber(self.rate(), 2))
+        self.rate_widget["foreground"] = COLOR_NORM[self.appdesign]
         self.rate_widget.after(0, self.rate_widget.config, {"text": msg})
+        msgnow = " {}  |".format(Locale.stringFromNumber(self.ratenow(), 2))
+        self.ratenow_widget["foreground"] = COLOR_NORM[self.appdesign]
+        self.ratenow_widget.after(0, self.ratenow_widget.config, {"text": msgnow})
 
     def update_jumpspeed_speed(self):
         """
         Set the jump speed rate in the EDMC window
-        :param msg:
-        :return:
         """
-        msg = "{} Ly/hr".format(Locale.stringFromNumber(self.speed(), 2))
+        msg = " {}".format(Locale.stringFromNumber(self.speed(), 2))
+        self.speed_widget["foreground"] = COLOR_NORM[self.appdesign]
         self.speed_widget.after(0, self.speed_widget.config, {"text": msg})
+        msgnow = " {}  |".format(Locale.stringFromNumber(self.speednow(), 2))
+        self.speednow_widget["foreground"] = COLOR_NORM[self.appdesign]
+        self.speednow_widget.after(0, self.speednow_widget.config, {"text": msgnow})
 
     def update_jumpspeed_dist(self):
         """
         Set the jump speed rate in the EDMC window
-        :param msg:
-        :return:
         """
-        msg = "{} Ly".format(Locale.stringFromNumber(self.trip_distance() + self.saved_distance, 2))
+        msg = " {}".format(Locale.stringFromNumber(self.trip_distance() + self.saved_distance, 2))
+        self.dist_widget["foreground"] = COLOR_NORM[self.appdesign]
         self.dist_widget.after(0, self.dist_widget.config, {"text": msg})
+        msgnow = " {}  |".format(Locale.stringFromNumber(self.trip_distance(), 2))
+        self.distnow_widget["foreground"] = COLOR_NORM[self.appdesign]
+        self.distnow_widget.after(0, self.distnow_widget.config, {"text": msgnow})
+
+
+def plugin_prefs(parent, cmdr, is_beta):
+    if config.get(CFG_DESIGN) != None:
+        this.appdesign = tk.IntVar(value=config.get(CFG_DESIGN))
+    else:
+        this.appdesign = tk.IntVar(value=0)
+
+    frame = nb.Frame(parent)
+    nb.Label(frame, text="JumpSpeed-EDMC Version: {INSTALLED}\n".format(INSTALLED=APP_VERSION)).grid(padx=10, sticky=tk.W)
+    nb.Checkbutton(frame, text=_("Dark Theme").encode('utf-8'), variable=this.appdesign, onvalue = 1, offvalue = 0).grid(padx=10, pady = 3, sticky=tk.W)
+    return frame
+
+
+def prefs_changed(cmdr, is_beta):
+    jumpspeed = this.jumpspeed
+    jumpspeed.appdesign = int(this.appdesign.get())
+    config.set(CFG_DESIGN, str(jumpspeed.appdesign))
+    jumpspeed.update_window()
 
 
 def plugin_start():
@@ -156,7 +275,9 @@ def plugin_start():
 
 
 def plugin_start3(plugindir):
-    plugin_start()
+    jumpspeed = JumpSpeed()
+    jumpspeed.load()
+    this.jumpspeed = jumpspeed
 
 
 def plugin_app(parent):
@@ -167,37 +288,52 @@ def plugin_app(parent):
 
     frame = tk.Frame(parent)
 
-    jumpspeed.rate_widget = tk.Label(
-        frame,
-        text="...",
-        justify=tk.RIGHT)
-    rate_label = tk.Label(frame, text="Jump Rate:", justify=tk.LEFT)
+    jumpspeed.rate_widget = tk.Label(frame, text="...", justify=tk.RIGHT)
+    rate_label = tk.Label(frame, text=_("Jumps/Hour:").encode('utf-8'), justify=tk.LEFT)
     rate_label.grid(row=0, column=0, sticky=tk.W)
     jumpspeed.rate_widget.grid(row=0, column=2, sticky=tk.E)
+    rateT_label = tk.Label(frame, text=_("Jumps").encode('utf-8'), justify=tk.LEFT)
+    rateT_label.grid(row=0, column=4, sticky=tk.W)
 
-    jumpspeed.speed_widget = tk.Label(
-        frame,
-        text="...",
-        justify=tk.RIGHT)
-    speed_label = tk.Label(frame, text="Speed:", justify=tk.LEFT)
+    jumpspeed.ratenow_widget = tk.Label(frame, text="", justify=tk.RIGHT)
+    jumpspeed.ratenow_widget.grid(row=0, column=1, sticky=tk.E)
+
+    jumpspeed.speed_widget = tk.Label(frame, text="...", justify=tk.RIGHT)
+    speed_label = tk.Label(frame, text=_("Distance/Hour:").encode('utf-8'), justify=tk.LEFT)
     speed_label.grid(row=1, column=0, sticky=tk.W)
     jumpspeed.speed_widget.grid(row=1, column=2, sticky=tk.E)
+    speedT_label = tk.Label(frame, text="Ly", justify=tk.LEFT)
+    speedT_label.grid(row=1, column=4, sticky=tk.W)
 
-    jumpspeed.dist_widget = tk.Label(
-        frame,
-        text="...",
-        justify=tk.RIGHT)
-    dist_label = tk.Label(frame, text="Distance:", justify=tk.LEFT)
+    jumpspeed.speednow_widget = tk.Label(frame, text="", justify=tk.RIGHT)
+    jumpspeed.speednow_widget.grid(row=1, column=1, sticky=tk.E)
+
+    jumpspeed.dist_widget = tk.Label(frame, text="...", justify=tk.RIGHT)
+    dist_label = tk.Label(frame, text=_("Overall dist.:").encode('utf-8'), justify=tk.LEFT)
     dist_label.grid(row=2, column=0, sticky=tk.W)
     jumpspeed.dist_widget.grid(row=2, column=2, sticky=tk.E)
+    distT_label = tk.Label(frame, text="Ly", justify=tk.LEFT)
+    distT_label.grid(row=2, column=4, sticky=tk.W)
 
+    jumpspeed.distnow_widget = tk.Label(frame, text="", justify=tk.RIGHT)
+    jumpspeed.distnow_widget.grid(row=2, column=1, sticky=tk.E)
+
+    """
     reset_btn = tk.Button(frame, text="Reset", command=jumpspeed.reset)
     reset_btn.grid(row=2, column=1, sticky=tk.W)
+    """
 
+    frame.columnconfigure(0, weight=0)
+    frame.columnconfigure(1, weight=1)
     frame.columnconfigure(2, weight=1)
+    frame.columnconfigure(3, weight=0)
 
     jumpspeed.update_window()
     return frame
+
+
+def dashboard_entry(cmdr, is_beta, entry):
+    this.jumpspeed.update_window()
 
 
 def journal_entry(cmdr, system, station, entry, state):
@@ -211,6 +347,11 @@ def journal_entry(cmdr, system, station, entry, state):
     :return:
     """
     if "event" in entry:
-        if "FSDJump" in entry["event"]:
+        if "LoadGame" in entry["event"]:
+            this.jumpspeed.starttime()
+        elif "Statistics" in entry["event"]:
+            this.jumpspeed.start_data(entry["Total_Hyperspace_Distance"], entry["Total_Hyperspace_Jumps"], entry["Time_Played"])
+        elif "FSDJump" in entry["event"]:
             this.jumpspeed.jump(entry["JumpDist"])
 
+        this.jumpspeed.update_window()
