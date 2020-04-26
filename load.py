@@ -24,7 +24,7 @@ try:
 except ImportError:
     config = dict()
 
-APP_VERSION = "20.04.12_b1848"
+APP_VERSION = "20.04.26_b0049"
 
 CFG_DISTANCE = "JumpSpeed_distance"
 CFG_JUMPS = "JumpSpeed_jumps"
@@ -350,7 +350,7 @@ def journal_entry(cmdr, system, station, entry, state):
         if "LoadGame" in entry["event"]:
             this.jumpspeed.starttime()
         elif "Statistics" in entry["event"]:
-            this.jumpspeed.start_data(entry["Total_Hyperspace_Distance"], entry["Total_Hyperspace_Jumps"], entry["Time_Played"])
+            this.jumpspeed.start_data(entry["Exploration"]["Total_Hyperspace_Distance"], entry["Exploration"]["Total_Hyperspace_Jumps"], entry["Exploration"]["Time_Played"])
         elif "FSDJump" in entry["event"]:
             this.jumpspeed.jump(entry["JumpDist"])
 
