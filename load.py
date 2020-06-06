@@ -24,13 +24,13 @@ try:
 except ImportError:
     config = dict()
 
-APP_VERSION = "20.04.26_b0049"
+APP_VERSION = "20.06.06_b1700"
 
 CFG_DISTANCE = "JumpSpeed_distance"
 CFG_JUMPS = "JumpSpeed_jumps"
 CFG_TIME = "JumpSpeed_time"
-CFG_DESIGN = "JumpSpeed_design"
-COLOR_NORM = ("#000000", "#80FFFF")
+CFG_DESIGN = "theme"
+COLOR_NORM = ("#000000", "#80FFFF", "#80FFFF")
 
 
 class Jump(object):
@@ -74,8 +74,8 @@ class JumpSpeed(object):
         """
         Load saved distance from config
         """
-        if config.get(CFG_DESIGN):
-            self.appdesign = int(config.get(CFG_DESIGN))
+        if config.getint(CFG_DESIGN):
+            self.appdesign = config.getint(CFG_DESIGN)
         else:
            self.appdesign = 0
 
@@ -249,24 +249,10 @@ class JumpSpeed(object):
         self.distnow_widget.after(0, self.distnow_widget.config, {"text": msgnow})
 
 
-def plugin_prefs(parent, cmdr, is_beta):
-    if config.get(CFG_DESIGN) != None:
-        this.appdesign = tk.IntVar(value=config.get(CFG_DESIGN))
-    else:
-        this.appdesign = tk.IntVar(value=0)
-
-    frame = nb.Frame(parent)
-    nb.Label(frame, text="JumpSpeed-EDMC Version: {INSTALLED}\n".format(INSTALLED=APP_VERSION)).grid(padx=10, sticky=tk.W)
-    nb.Checkbutton(frame, text=_("Dark Theme").encode('utf-8'), variable=this.appdesign, onvalue = 1, offvalue = 0).grid(padx=10, pady = 3, sticky=tk.W)
-    return frame
-
-
 def prefs_changed(cmdr, is_beta):
     jumpspeed = this.jumpspeed
-    jumpspeed.appdesign = int(this.appdesign.get())
-    config.set(CFG_DESIGN, str(jumpspeed.appdesign))
+    jumpspeed.appdesign = config.getint(CFG_DESIGN)
     jumpspeed.update_window()
-
 
 def plugin_start():
     jumpspeed = JumpSpeed()

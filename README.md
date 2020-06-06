@@ -35,9 +35,7 @@ Die Zeit die ein Profil gespielt wurde sowie aktuelle Sprungdistanz und die Anza
 
 ## Wichtiges
 
-Das Plugin erkennt nicht automatisch welches Design (Theme) man in EDMC aktiviert hat, weshalb es eine Optionsseite mit der möglichkeit der Designwahl für das Plugin gibt.
-
-![EDMC Optionen](edmc_options_jumpspeed.png)
+~~Das Plugin erkennt nicht automatisch welches Design (Theme) man in EDMC aktiviert hat, weshalb es eine Optionsseite mit der möglichkeit der Designwahl für das Plugin gibt.~~
 
 
 ## Weiteres
