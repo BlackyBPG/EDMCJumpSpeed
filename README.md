@@ -1,6 +1,6 @@
 # JumpSpeed EDMC Plugin
 
-Das ist ein einfaches Plugin für den [ED MarketConnector](https://github.com/Marginal/EDMarketConnector/wiki), basierend auf dem Original [EDMCJumpSpeed](https://github.com/Exynom/EDMC-HourlyIncome) vom inorton!
+Das ist ein einfaches Plugin für den [ED MarketConnector](https://github.com/EDCD/EDMarketConnector/wiki), basierend auf dem Original [EDMCJumpSpeed](https://github.com/Exynom/EDMC-HourlyIncome) vom inorton!
 
 ![In-game Screenshot](edmc_plugins_jsd.png)
 
@@ -13,7 +13,7 @@ So wie auch alle anderen EDMC-Plugins wird der Ordner aus dem heruntergeladenen 
 ```
 $AppPath$\EDMarketConnector\plugins\JumpSpeed
 ```
-Nach dem starten des EDMC ist das Plugin sofort einsatzbereit, es ist bereits kompatibel mit der neuen BETA-Version des EDMC 3.50 beta0, funktioniert jedoch auch in der Version 3.43 des EDMC.
+Nach dem starten des EDMC ist das Plugin sofort einsatzbereit, es ist bereits kompatibel mit der neuen BETA-Version des EDMC 3.99.1.0 (4.0.0.0 beta1), funktioniert jedoch auch in der Version 3.46 des EDMC.
 
 
 ## Anzeigen

@@ -24,7 +24,7 @@ try:
 except ImportError:
     config = dict()
 
-APP_VERSION = "20.06.06_b1700"
+APP_VERSION = "20.06.06_b2151"
 
 CFG_DISTANCE = "JumpSpeed_distance"
 CFG_JUMPS = "JumpSpeed_jumps"
@@ -68,7 +68,6 @@ class JumpSpeed(object):
         self.saved_time = 0
         self.start_time = 0
         self.update_window()
-        self.save()
 
     def load(self):
         """
@@ -333,7 +332,11 @@ def journal_entry(cmdr, system, station, entry, state):
     :return:
     """
     if "event" in entry:
-        if "LoadGame" in entry["event"]:
+        if "Shutdown" in entry["event"]:
+            this.jumpspeed.save()
+            this.jumpspeed.reset()
+            this.jumpspeed.load()
+        elif "LoadGame" in entry["event"]:
             this.jumpspeed.starttime()
         elif "Statistics" in entry["event"]:
             this.jumpspeed.start_data(entry["Exploration"]["Total_Hyperspace_Distance"], entry["Exploration"]["Total_Hyperspace_Jumps"], entry["Exploration"]["Time_Played"])
