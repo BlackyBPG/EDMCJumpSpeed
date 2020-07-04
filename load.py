@@ -24,7 +24,7 @@ try:
 except ImportError:
     config = dict()
 
-APP_VERSION = "20.06.06_b2151"
+APP_VERSION = "20.07.04_b0938"
 
 CFG_DISTANCE = "JumpSpeed_distance"
 CFG_JUMPS = "JumpSpeed_jumps"
@@ -321,7 +321,7 @@ def dashboard_entry(cmdr, is_beta, entry):
     this.jumpspeed.update_window()
 
 
-def journal_entry(cmdr, system, station, entry, state):
+def journal_entry(cmdr, is_beta, system, station, entry, state):
     """
     Process a journal event
     :param cmdr:
