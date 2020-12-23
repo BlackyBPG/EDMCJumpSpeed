@@ -1,6 +1,6 @@
 # JumpSpeed EDMC Plugin
 
-Das ist ein einfaches Plugin für den [ED MarketConnector](https://github.com/EDCD/EDMarketConnector/wiki), basierend auf dem Original [EDMCJumpSpeed](https://github.com/Exynom/EDMC-HourlyIncome) vom inorton!
+Das ist ein einfaches Plugin für den [ED MarketConnector](https://github.com/EDCD/EDMarketConnector/wiki), basierend auf dem Original [EDMCJumpSpeed](https://github.com/inorton/EDMCJumpSpeed) vom inorton!
 
 ![In-game Screenshot](edmc_plugins_jsd.png)
 
