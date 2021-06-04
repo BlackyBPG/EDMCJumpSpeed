@@ -24,7 +24,7 @@ try:
 except ImportError:
     config = dict()
 
-APP_VERSION = "20.07.04_b0938"
+APP_VERSION = "21.01.02_b1344"
 
 CFG_DISTANCE = "JumpSpeed_distance"
 CFG_JUMPS = "JumpSpeed_jumps"
@@ -169,7 +169,7 @@ class JumpSpeed(object):
         """
         if self.alljumps() > 0:
             return (self.saved_jumps + self.alljumps()) / (self.saved_time + self.sincetime())
-        elif self.saved_jumps > 0:
+        elif self.saved_jumps > 0 and self.saved_time > 0:
             return self.saved_jumps / self.saved_time
         else:
             return 0
@@ -179,7 +179,7 @@ class JumpSpeed(object):
         Get the jump/hr rate
         :return jump rate for trip per hour:
         """
-        if self.alljumps() > 0:
+        if self.alljumps() > 0 and self.sincetime() > 0:
             return self.alljumps() / self.sincetime()
         else:
             return 0
@@ -191,7 +191,7 @@ class JumpSpeed(object):
         """
         if self.trip_distance() > 0 and self.alljumps() > 0:
             return (self.saved_distance + self.trip_distance()) / (self.saved_time + self.sincetime())
-        elif self.saved_distance > 0:
+        elif self.saved_distance > 0 and self.saved_time > 0:
             return self.saved_distance / self.saved_time
         else:
             return 0
@@ -274,17 +274,17 @@ def plugin_app(parent):
     frame = tk.Frame(parent)
 
     jumpspeed.rate_widget = tk.Label(frame, text="...", justify=tk.RIGHT)
-    rate_label = tk.Label(frame, text=_("Jumps/Hour:").encode('utf-8'), justify=tk.LEFT)
+    rate_label = tk.Label(frame, text=_("Jumps/Hour:").encode('iso-8859-1'), justify=tk.LEFT)
     rate_label.grid(row=0, column=0, sticky=tk.W)
     jumpspeed.rate_widget.grid(row=0, column=2, sticky=tk.E)
-    rateT_label = tk.Label(frame, text=_("Jumps").encode('utf-8'), justify=tk.LEFT)
+    rateT_label = tk.Label(frame, text=_("Jumps").encode('iso-8859-1'), justify=tk.LEFT)
     rateT_label.grid(row=0, column=4, sticky=tk.W)
 
     jumpspeed.ratenow_widget = tk.Label(frame, text="", justify=tk.RIGHT)
     jumpspeed.ratenow_widget.grid(row=0, column=1, sticky=tk.E)
 
     jumpspeed.speed_widget = tk.Label(frame, text="...", justify=tk.RIGHT)
-    speed_label = tk.Label(frame, text=_("Distance/Hour:").encode('utf-8'), justify=tk.LEFT)
+    speed_label = tk.Label(frame, text=_("Distance/Hour:").encode('iso-8859-1'), justify=tk.LEFT)
     speed_label.grid(row=1, column=0, sticky=tk.W)
     jumpspeed.speed_widget.grid(row=1, column=2, sticky=tk.E)
     speedT_label = tk.Label(frame, text="Ly", justify=tk.LEFT)
@@ -294,7 +294,7 @@ def plugin_app(parent):
     jumpspeed.speednow_widget.grid(row=1, column=1, sticky=tk.E)
 
     jumpspeed.dist_widget = tk.Label(frame, text="...", justify=tk.RIGHT)
-    dist_label = tk.Label(frame, text=_("Overall dist.:").encode('utf-8'), justify=tk.LEFT)
+    dist_label = tk.Label(frame, text=_("Overall dist.:").encode('iso-8859-1'), justify=tk.LEFT)
     dist_label.grid(row=2, column=0, sticky=tk.W)
     jumpspeed.dist_widget.grid(row=2, column=2, sticky=tk.E)
     distT_label = tk.Label(frame, text="Ly", justify=tk.LEFT)
