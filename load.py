@@ -24,7 +24,7 @@ try:
 except ImportError:
     config = dict()
 
-APP_VERSION = "21.01.02_b1344"
+APP_VERSION = "24.02.11_b2144"
 
 CFG_DISTANCE = "JumpSpeed_distance"
 CFG_JUMPS = "JumpSpeed_jumps"
@@ -73,24 +73,24 @@ class JumpSpeed(object):
         """
         Load saved distance from config
         """
-        if config.getint(CFG_DESIGN):
-            self.appdesign = config.getint(CFG_DESIGN)
+        if config.get_int(CFG_DESIGN):
+            self.appdesign = config.get_int(CFG_DESIGN)
         else:
            self.appdesign = 0
 
-        saved = config.get(CFG_DISTANCE)
+        saved = config.get_str(CFG_DISTANCE)
         if not saved:
             self.saved_distance = 0.0
         else:
             self.saved_distance = float(saved)
 
-        savedJ = config.get(CFG_JUMPS)
+        savedJ = config.get_str(CFG_JUMPS)
         if not savedJ:
             self.saved_jumps = 0.0
         else:
             self.saved_jumps = float(savedJ)
 
-        savedT = config.get(CFG_TIME)
+        savedT = config.get_str(CFG_TIME)
         if not savedT:
             self.saved_time = 0.0
         else:
@@ -189,7 +189,7 @@ class JumpSpeed(object):
         Get the jump speed in ly/hr
         :return overall jump speed rate per hour:
         """
-        if self.trip_distance() > 0 and self.alljumps() > 0:
+        if self.trip_distance() > 0 and self.alljumps() > 0 and self.sincetime() > 0:
             return (self.saved_distance + self.trip_distance()) / (self.saved_time + self.sincetime())
         elif self.saved_distance > 0 and self.saved_time > 0:
             return self.saved_distance / self.saved_time
@@ -201,7 +201,7 @@ class JumpSpeed(object):
         Get the jump speed in ly/hr
         :return jump speed rate for trip per hour:
         """
-        if self.trip_distance() > 0 and self.alljumps() > 0:
+        if self.trip_distance() > 0 and self.alljumps() > 0 and self.sincetime() > 0:
             return self.trip_distance() / self.sincetime()
         else:
             return 0
@@ -250,7 +250,7 @@ class JumpSpeed(object):
 
 def prefs_changed(cmdr, is_beta):
     jumpspeed = this.jumpspeed
-    jumpspeed.appdesign = config.getint(CFG_DESIGN)
+    jumpspeed.appdesign = config.get_int(CFG_DESIGN)
     jumpspeed.update_window()
 
 def plugin_start():
