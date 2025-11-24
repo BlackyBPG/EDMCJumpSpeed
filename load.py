@@ -24,7 +24,7 @@ try:
 except ImportError:
     config = dict()
 
-APP_VERSION = "24.02.11_b2144"
+APP_VERSION = "25.11.24_b2149"
 
 CFG_DISTANCE = "JumpSpeed_distance"
 CFG_JUMPS = "JumpSpeed_jumps"
@@ -218,10 +218,10 @@ class JumpSpeed(object):
         """
         Set the jump rate rate in the EDMC window
         """
-        msg = " {}".format(Locale.stringFromNumber(self.rate(), 2))
+        msg = " {}".format(Locale.string_from_number(self.rate(), 2))
         self.rate_widget["foreground"] = COLOR_NORM[self.appdesign]
         self.rate_widget.after(0, self.rate_widget.config, {"text": msg})
-        msgnow = " {}  |".format(Locale.stringFromNumber(self.ratenow(), 2))
+        msgnow = " {}  |".format(Locale.string_from_number(self.ratenow(), 2))
         self.ratenow_widget["foreground"] = COLOR_NORM[self.appdesign]
         self.ratenow_widget.after(0, self.ratenow_widget.config, {"text": msgnow})
 
@@ -229,10 +229,10 @@ class JumpSpeed(object):
         """
         Set the jump speed rate in the EDMC window
         """
-        msg = " {}".format(Locale.stringFromNumber(self.speed(), 2))
+        msg = " {}".format(Locale.string_from_number(self.speed(), 2))
         self.speed_widget["foreground"] = COLOR_NORM[self.appdesign]
         self.speed_widget.after(0, self.speed_widget.config, {"text": msg})
-        msgnow = " {}  |".format(Locale.stringFromNumber(self.speednow(), 2))
+        msgnow = " {}  |".format(Locale.string_from_number(self.speednow(), 2))
         self.speednow_widget["foreground"] = COLOR_NORM[self.appdesign]
         self.speednow_widget.after(0, self.speednow_widget.config, {"text": msgnow})
 
@@ -240,10 +240,10 @@ class JumpSpeed(object):
         """
         Set the jump speed rate in the EDMC window
         """
-        msg = " {}".format(Locale.stringFromNumber(self.trip_distance() + self.saved_distance, 2))
+        msg = " {}".format(Locale.string_from_number(self.trip_distance() + self.saved_distance, 2))
         self.dist_widget["foreground"] = COLOR_NORM[self.appdesign]
         self.dist_widget.after(0, self.dist_widget.config, {"text": msg})
-        msgnow = " {}  |".format(Locale.stringFromNumber(self.trip_distance(), 2))
+        msgnow = " {}  |".format(Locale.string_from_number(self.trip_distance(), 2))
         self.distnow_widget["foreground"] = COLOR_NORM[self.appdesign]
         self.distnow_widget.after(0, self.distnow_widget.config, {"text": msgnow})
 
